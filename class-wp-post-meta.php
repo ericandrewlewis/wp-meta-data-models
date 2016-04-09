@@ -64,8 +64,9 @@ class WP_Meta {
 			echo 'Meta value must be an array'; die;
 		}
 		$current_value = $this->get( $id );
-		// Delete rows that are higher than the given.
-		// Assumes that row values are unique, which may be a bad assumption.
+		// Delete rows that go further than the new value's index.
+		// Assumes that row values are unique, which may be a bad assumption,
+		// but that's how the API works currently.
 		if ( $current_value && sizeof( $current_value ) > sizeof( $value ) ) {
 			for ( $index = sizeof( $value ); $index < sizeof( $current_value ); $index++ ) {
 				delete_post_meta( $id, $this->key, $current_value[$index] );
