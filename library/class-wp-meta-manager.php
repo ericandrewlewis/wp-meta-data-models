@@ -10,6 +10,10 @@ final class WP_Meta_Manager {
 		'all' => array()
 	);
 
+	public $options = array(
+		'all' => array()
+	);
+
 	function __construct() {
 		$post_types_without_meta = array( 'revision', 'nav_menu_item' );
 		foreach ( get_post_types( null, 'names' ) as $post_type ) {
