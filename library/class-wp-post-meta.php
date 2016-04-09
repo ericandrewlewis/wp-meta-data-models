@@ -24,15 +24,11 @@ class WP_Post_Meta {
 		$this->key = $options['key'];
 		$this->data_type = $options['data_type'];
 
-		if ( method_exists( $this, 'sanitize' ) ) {
-			add_filter( "sanitize_{$this->meta_type}_meta_{$this->key}", array( $this, 'sanitize' ), 10, 3 );
-		} else if ( isset( $options['sanitize_callback'] ) && is_callable( $options['sanitize_callback'] ) ) {
+		if ( isset( $options['sanitize_callback'] ) && is_callable( $options['sanitize_callback'] ) ) {
 				add_filter( "sanitize_{$this->meta_type}_meta_{$this->key}", $options['sanitize_callback'], 10, 3 );
 		}
 
-		if ( method_exists( $this, 'authorize' ) ) {
-			add_filter( "auth_{$this->meta_type}_meta_{$this->key}", array( $this, 'authorize' ), 10, 6 );
-		} else if ( isset( $options['auth_callback'] ) && is_callable( $options['auth_callback'] ) ) {
+		if ( isset( $options['auth_callback'] ) && is_callable( $options['auth_callback'] ) ) {
 			add_filter( "auth_{$this->meta_type}_meta_{$this->key}", $options['auth_callback'], 10, 6 );
 		}
 	}
@@ -84,8 +80,4 @@ class WP_Post_Meta {
 			}
 		}
 	}
-
-	// Can be defined on subclasses.
-	// function sanitize() {}
-	// function authorize() {}
 }
