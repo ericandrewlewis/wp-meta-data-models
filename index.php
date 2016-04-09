@@ -7,5 +7,6 @@ Version:     0.1
 
 require( 'library/class-wp-meta-manager.php');
 require( 'library/class-wp-post-meta.php');
+require( 'library/class-wp-option.php');
 
 $manager = new WP_Meta_Manager();
