@@ -18,12 +18,6 @@ class WP_Meta {
 	 */
 	public $data_type = null;
 
-	/**
-	 * Whether the metadata should be stored in one row, or separate ones.
-	 *
-	 * @var bool
-	 */
-	public $single_row = null;
 
 	function __construct( $options ) {
 		$this->meta_type = $options['meta_type'];
@@ -41,8 +35,6 @@ class WP_Meta {
 		} else if ( isset( $options['auth_callback'] ) && is_callable( $options['auth_callback'] ) ) {
 			add_filter( "auth_{$this->meta_type}_meta_{$this->key}", $options['auth_callback'], 10, 6 );
 		}
-
-		$this->single_row = $options['single_row'];
 	}
 
 	/**
@@ -68,35 +60,26 @@ class WP_Meta {
 	 * @param [type] $value [description]
 	 */
 	function set( $id, $value ) {
+		if ( ! is_array( $value ) ) {
+			echo 'Meta value must be an array'; die;
+		}
 		$current_value = $this->get( $id );
-
-		if ( $this->single_row ) {
-			if ( $current_value ) {
-				update_post_meta( $id, $this->key, $value, $current_value[0] );
+		// Delete rows that are higher than the given.
+		// Assumes that row values are unique, which may be a bad assumption.
+		if ( $current_value && sizeof( $current_value ) > sizeof( $value ) ) {
+			for ( $index = sizeof( $value ); $index < sizeof( $current_value ); $index++ ) {
+				delete_post_meta( $id, $this->key, $current_value[$index] );
+			}
+		}
+		foreach ( $value as $index => $_value ) {
+			// A special key to unset a meta row, e.g. for splicing.
+			if ( $_value === '##unset##' ) {
+				delete_post_meta( $id, $this->key, $current_value[$index] );
+			}
+			if ( $current_value && isset( $current_value[$index] ) ) {
+				update_post_meta( $id, $this->key, $_value, $current_value[$index] );
 			} else {
-				add_post_meta( $id, $this->key, $value );
-			}
-		} else {
-			if ( ! is_array( $value ) ) {
-				echo 'Meta value must be an array';
-			}
-			// Delete rows that are higher than the given.
-			// What if multiple rows have the same value? We aren't deleting by an index key,
-			// we're deleting by the row's value.
-			// e.g. How would you splice a value? e.g. I have related posts 1, 5, 7. I want to delete 5.
-			if ( $current_value && sizeof( $current_value ) > sizeof( $value ) ) {
-				for ( $index = sizeof( $value ); $index < sizeof( $current_value ); $index++ ) {
-					delete_post_meta( $id, $this->key, $current_value[$index] );
-				}
-			}
-			// In case any extra rows were deleted, refresh data.
-			$current_value = $this->get( $id );
-			foreach ( $value as $index => $_value ) {
-				if ( $current_value && isset( $current_value[$index] ) ) {
-					update_post_meta( $id, $this->key, $_value, $current_value[$index] );
-				} else {
-					add_post_meta( $id, $this->key, $_value );
-				}
+				add_post_meta( $id, $this->key, $_value );
 			}
 		}
 	}
