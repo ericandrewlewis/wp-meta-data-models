@@ -1,6 +1,6 @@
 <?php
 
-class WP_Meta {
+class WP_Post_Meta {
 
 	/**
 	 * The meta's content type. e.g. 'post' or 'comment'.

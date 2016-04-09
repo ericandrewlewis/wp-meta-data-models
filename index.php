@@ -11,7 +11,7 @@ $manager = new WP_Meta_Manager();
 
 // Define related posts meta, which allows an integer in a separate
 // meta row, and supports up to three rows.
-$related_posts_meta = new WP_Meta( array(
+$related_posts_meta = new WP_Post_Meta( array(
 	'meta_type' => 'post',
 	'key' => 'related_posts',
 	'data_type' => array(
@@ -30,7 +30,7 @@ $manager->register( $related_posts_meta );
 
 // Define review meta, which would shove reviews into an array
 // stored inside a single meta field.
-$review_meta = new WP_Meta( array(
+$review_meta = new WP_Post_Meta( array(
 	'meta_type' => 'post',
 	'key' => 'review',
 	'data_type' => array(
